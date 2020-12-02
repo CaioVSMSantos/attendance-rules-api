@@ -1,12 +1,13 @@
-require('dotenv').config()
-const express = require('express')
-const attendanceRuleRouter = require('./controllers/attendance-rule.js')
+import dotenv from 'dotenv'
+dotenv.config()
+import express, { json } from 'express'
+import attendanceRuleRouter from './controllers/attendance-rules.js'
 
 const app = express()
 const SERVER_PORT = process.env.PORT || 3000
 
-app.use(express.json())
-app.use(attendanceRuleRouter.router)
+app.use(json())
+app.use(attendanceRuleRouter)
 
 app.listen(SERVER_PORT, () => {
     console.log(`Server running on port ${SERVER_PORT}`);
