@@ -1,0 +1,25 @@
+{
+  "name": "cubos-desafio-backend",
+  "version": "1.0.0",
+  "description": "This is a simple REST API to manage attendance rules for clinics",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CaioVictorMota/CUBOS-Desafio-Backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CaioVictorMota/CUBOS-Desafio-Backend/issues"
+  },
+  "homepage": "https://github.com/CaioVictorMota/CUBOS-Desafio-Backend#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  }
+}
