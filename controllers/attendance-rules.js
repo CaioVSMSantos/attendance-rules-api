@@ -1,18 +1,18 @@
 import express from 'express'
-import validateNewAttendanceRule from '../middlewares/validateNewAttendanceRule.js'
-import attendanceRule from '../models/attendance-rule.js'
+import validateNewAttendanceRuleStructure 
+    from '../middlewares/validateNewAttendanceRuleStructure.js'
+import ar from '../models/attendance-rule.js'
 
 const router = new express.Router()
 const endPoint = '/attendance-rules/'
 const idParam = 'attendanceRuleId'
 
 router.route(endPoint)
-.post(validateNewAttendanceRule, async (req, res) => {
+.post(validateNewAttendanceRuleStructure, async (req, res) => {
     try{
-        let newAttendanceRule = req.body;
-        newAttendanceRule = attendanceRule.saveAttendanceRule(newAttendanceRule)
+        const savedAttendanceRule = ar.saveNewAttendanceRule(req.body)
         res.status(201)
-            .location(endPoint + newAttendanceRule.id)
+            .location(endPoint + savedAttendanceRule.id)
             .send()
     } catch (error) {
         res.status(400).send()
@@ -20,8 +20,7 @@ router.route(endPoint)
 })
 .get(async (req, res) => {
     try {
-        const attendanceRules = []
-        //const attendanceRules = getAttendanceRules(req.query)
+        const attendanceRules = ar.getAttendanceRulesJSON(req.query)
         if (attendanceRules.length !== 0) {
             return res.status(200).send(attendanceRules)
         }
@@ -36,7 +35,7 @@ router.route(endPoint + ':' + idParam)
     try {
         const id = req.params[idParam]
         const attendanceRuleDeleted = {}
-        //const attendanceRuleDeleted = deleteAttendanceRule(id)
+        //const attendanceRuleDeleted = ar.deleteAttendanceRule(id)
         if (attendanceRuleDeleted) {
             return res.status(200).send()
         }

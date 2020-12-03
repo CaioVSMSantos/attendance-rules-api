@@ -1,4 +1,4 @@
-function validateNewAttendanceRule (req, res, next) {
+function validateNewAttendanceRuleStructure (req, res, next) {
     const attendanceRule = req.body
     const isValid = validateDay(attendanceRule.day) 
             && validateIntervals(attendanceRule.intervals) 
@@ -35,4 +35,4 @@ function validateOptions (options) {
     return true
 }
 
-export default validateNewAttendanceRule
+export default validateNewAttendanceRuleStructure
