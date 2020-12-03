@@ -1,6 +1,6 @@
 import express from 'express'
-import validateNewAttendanceRuleStructure 
-    from '../middlewares/validateNewAttendanceRuleStructure.js'
+import validateNewAttendanceRuleSyntax 
+    from '../middlewares/validateNewAttendanceRuleSyntax.js'
 import ar from '../models/attendance-rule.js'
 
 const router = new express.Router()
@@ -8,7 +8,7 @@ const endPoint = '/attendance-rules/'
 const idParam = 'attendanceRuleId'
 
 router.route(endPoint)
-.post(validateNewAttendanceRuleStructure, async (req, res) => {
+.post(validateNewAttendanceRuleSyntax, async (req, res) => {
     try{
         const savedAttendanceRule = ar.saveNewAttendanceRule(req.body)
         res.status(201)

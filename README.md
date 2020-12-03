@@ -1,11 +1,11 @@
 <h1> CUBOS-Backend-Challenge </h1>
-This is a simple REST API to manage attendance rules for a clinic.
-
 <h3 align="center">
     <a href="README.md">English-US</a>
     <span>|</span>
     <a href="README-ptBR.md">Português-BR</a>
 </h3>
+
+This is a simple REST API to manage attendance rules for a clinic.
 
 <h2>Instructions</h2>
 
