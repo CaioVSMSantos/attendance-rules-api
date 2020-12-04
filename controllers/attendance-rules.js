@@ -13,9 +13,13 @@ router.route(endPoint)
 .post(validateNewAttendanceRuleSyntax, (req, res) => {
     try{
         const savedAttendanceRule = ar.saveNewAttendanceRule(req.body)
-        res.status(201)
-            .location(endPoint + savedAttendanceRule.id)
-            .send()
+        if (savedAttendanceRule) {
+            return res.status(201)
+                .location(endPoint + savedAttendanceRule.id)
+                .send()
+        } else {
+            return res.status(409).send({error: 'Conflicting time intervals'})
+        }
     } catch (error) {
         console.log(error)
         res.status(500).send()
@@ -38,8 +42,7 @@ router.route(endPoint + ':' + idParam)
 .delete(async (req, res) => {
     try {
         const id = req.params[idParam]
-        const attendanceRuleDeleted = {}
-        //const attendanceRuleDeleted = ar.deleteAttendanceRule(id)
+        const attendanceRuleDeleted = ar.deleteAttendanceRule(id)
         if (attendanceRuleDeleted) {
             return res.status(200).send()
         }

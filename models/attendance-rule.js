@@ -10,9 +10,8 @@ function saveNewAttendanceRule (requestBody) {
     if (validateNonConflictingIntervals(newAR)) {
         saveNewRuleToFile(newAR)
         return newAR
-    } else {
-        //return error informing conflicting intervals
     }
+    return undefined
 }
 
 function buildNewAttendanceRuleObject (requestBody) {
@@ -71,7 +70,9 @@ function filterAttendanceRulesByDateRange (startDate, endDate) {
         rule.intervals = rule.intervals.concat(
             getDateRulesIntervals(date, allRules))
 
-        rules.push(rule)
+        if (rule.intervals.length !== 0) {
+            rules.push(rule)
+        }
         date = dtu.addDaysToDate(date, 1)
     }
     return rules
@@ -108,9 +109,22 @@ function getRulesIntervalsByDayFilter (rules, filter) {
     return intervals
 }
 
+function deleteAttendanceRule (id) {
+    let rules = getAllAttendanceRules()
+    for (const rule of rules) {
+        if (rule.id === id) {
+            const deletedRule = rules.splice(rules.indexOf(rule), 1)
+            fu.saveJSONFile(rules, path, fileName)
+            return deletedRule
+        }
+    }
+    return undefined
+}
+
 const attendanceRule = {
     saveNewAttendanceRule,
-    getAttendanceRules
+    getAttendanceRules,
+    deleteAttendanceRule
 }
 
 export default attendanceRule

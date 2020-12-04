@@ -19,7 +19,9 @@ function validateDayProperty (day) {
 function validateIntervalsProperty (intervals) {
     return intervals 
         && intervals.length !== 0 
-        && intervals.every(interval => validateIntervalObject)
+        && intervals.every((interval) => {
+            return validateIntervalObject(interval)
+        })
 }
 
 function validateIntervalObject (interval) {
