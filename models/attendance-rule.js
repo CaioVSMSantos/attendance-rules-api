@@ -1,127 +1,111 @@
-import fs from 'fs'
 import { v1 as uuidv1 } from 'uuid';
-import {weekdays,
-        isStandardDateFormat,
-        standardPatternDateStringToDate,
-        addDaysToDate,
-        isDateRangeEqualsGreaterThanOneWeek
-        } from '../utils/dateTimeUtils.js'
+import dtu from '../utils/dateTimeUtils.js'
+import fu from '../utils/fileUtils.js'
     
-
-const attendanceRulesPath = './saved-rules/'
-const attendanceRulesFile = 'attendance-rules.json'
-const attendanceRulesFilePath = attendanceRulesPath + attendanceRulesFile
-const startDateQueryParam = 'start-date'
-const endDateQueryParam = 'end-date'
+const path = './saved-rules/'
+const fileName = 'attendance-rules.json'
 
 function saveNewAttendanceRule (requestBody) {
-    const newAR = buildNewAttendanceRule(requestBody)
+    const newAR = buildNewAttendanceRuleObject(requestBody)
     if (validateNonConflictingIntervals(newAR)) {
-        saveAttendanceRuleJSON(newAR)
+        saveNewRuleToFile(newAR)
         return newAR
     } else {
         //return error informing conflicting intervals
     }
 }
 
-function buildNewAttendanceRule (requestBody) {
+function buildNewAttendanceRuleObject (requestBody) {
     const rule = {}
     rule.id = uuidv1()
     rule.day = requestBody.day
     rule.intervals = requestBody.intervals
-    rule.options = requestBody.options
     return rule
 }
 
-function validateNonConflictingIntervals(newAttendanceRule) {
+function validateNonConflictingIntervals(newAR) {
     return true
 }
 
-function saveAttendanceRuleJSON (newAR) {
-    try {
-        const attendanceRules = getAttendanceRulesJSON()
-        attendanceRules.push(newAR)
-        const attendanceRulesJSON = JSON.stringify(attendanceRules)
-        if (fs.existsSync(attendanceRulesPath)) {
-            fs.writeFileSync(attendanceRulesFilePath, attendanceRulesJSON);
-        } else {
-            fs.mkdirSync(attendanceRulesPath)
-            fs.writeFileSync(attendanceRulesFilePath, attendanceRulesJSON);
-        }
-    } catch (error) {
-        console.log(error)
-    }
+function saveNewRuleToFile (newAR) {
+    let rules = getAllAttendanceRules ()
+    rules.push(newAR)
+    fu.saveJSONFile(rules, path, fileName)
 }
 
-function getAttendanceRulesJSON () {
-    try {
-        if (fs.existsSync(attendanceRulesFilePath)) {
-            const buffer = fs.readFileSync(attendanceRulesFilePath)
-            const rules = JSON.parse(buffer)
-            return rules
-        } else {
-            return []
-        }
-    } catch (error) {
-        console.log(error)
-        return []
+function getAllAttendanceRules () {
+    let rules = fu.readJSONFile(path, fileName)
+    if (!rules) {
+        rules = []
     }
+    return rules
 }
 
 function getAttendanceRules (reqQuery) {
     if (dateQueryParamsExists(reqQuery)) {
-        return filterAttendanceRules(reqQuery)
+        const startDt = dtu.dateStringToDate(reqQuery[dtu.startDateQueryParam])
+        const endDt = dtu.dateStringToDate(reqQuery[dtu.endDateQueryParam])
+        return filterAttendanceRulesByDateRange(startDt, endDt)
     } else {
-        return getAttendanceRulesJSON()
+        return getAllAttendanceRules()
     }
 }
 
 function dateQueryParamsExists (reqQuery) {
-    return reqQuery[startDateQueryParam] && reqQuery[endDateQueryParam]
+    return reqQuery[dtu.startDateQueryParam] && reqQuery[dtu.endDateQueryParam]
 }
 
-function filterAttendanceRules (reqQuery) {
-    const rules = getAttendanceRulesJSON()
-    let filteredRules = []
-    filteredRules = filteredRules.concat(getAllDailyAttendanceRules(rules))
-    filteredRules = filteredRules.concat(getWeeklyAttendanceRules(reqQuery, rules))
-    filteredRules = filteredRules.concat(getAttendanceRulesByDate(reqQuery, rules))
-    return filteredRules;
+function filterAttendanceRulesByDateRange (startDate, endDate) {
+    let date = dtu.duplicateDate(startDate)
+    const allRules = getAllAttendanceRules()
+    let rules = []
+    while (date <= endDate) {
+        let rule = buildNewFormattedRuleObject(date)
+
+        rule.intervals = rule.intervals.concat(
+            getDailyRulesIntervals(allRules))
+
+        rule.intervals = rule.intervals.concat(
+            getWeeklyRulesIntervals(date, allRules))
+
+        rule.intervals = rule.intervals.concat(
+            getDateRulesIntervals(date, allRules))
+
+        rules.push(rule)
+        date = dtu.addDaysToDate(date, 1)
+    }
+    return rules
 }
 
-function getAllDailyAttendanceRules (rules) {
-    return rules.filter(rule => rule.day === 'daily')
-}
-
-function getWeeklyAttendanceRules(reqQuery, rules) {
-    const startDate = standardPatternDateStringToDate(reqQuery[startDateQueryParam])
-    const endDate = standardPatternDateStringToDate(reqQuery[endDateQueryParam])
-    if (isDateRangeEqualsGreaterThanOneWeek(startDate, endDate)) {
-        return rules.filter(rule => weekdays.includes(rule.day))
-    } else {
-        const queryWeekdays = []
-        let date = new Date()
-        date.setTime(startDate.getTime())
-        while (date <= endDate) {
-            queryWeekdays.push(weekdays[date.getDay()])
-            date = addDaysToDate(date, 1)
-        }
-        return rules.filter(rule => queryWeekdays.includes(rule.day))
+function buildNewFormattedRuleObject (date) {
+    return {
+        day: dtu.dateToString(date),
+        intervals: []
     }
 }
 
-function getAttendanceRulesByDate (reqQuery, rules) {
-    const startDate = standardPatternDateStringToDate(reqQuery[startDateQueryParam])
-    const endDate = standardPatternDateStringToDate(reqQuery[endDateQueryParam])
+function getDailyRulesIntervals (allRules) {
+    return getRulesIntervalsByDayFilter(allRules, 'daily')
+}
 
-    let filteredRules = rules.filter((rule) => {
-        if (isStandardDateFormat(rule.day)) {
-            const ruleDate = standardPatternDateStringToDate(rule.day)
-            return startDate <= ruleDate && ruleDate <= endDate
+function getWeeklyRulesIntervals (date, allRules) {
+    const day = dtu.weekdays[date.getUTCDay()]
+    return getRulesIntervalsByDayFilter(allRules, day)
+}
+
+function getDateRulesIntervals (date, allRules) {
+    const day = dtu.dateToString(date)
+    return getRulesIntervalsByDayFilter(allRules, day)
+}
+
+function getRulesIntervalsByDayFilter (rules, filter) {
+    let intervals = []
+    for (const rule of rules) {
+        if (rule.day === filter) {
+            intervals = intervals.concat(rule.intervals)
         }
-        return false
-    })
-    return filteredRules
+    }
+    return intervals
 }
 
 const attendanceRule = {

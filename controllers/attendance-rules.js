@@ -17,7 +17,8 @@ router.route(endPoint)
             .location(endPoint + savedAttendanceRule.id)
             .send()
     } catch (error) {
-        res.status(400).send()
+        console.log(error)
+        res.status(500).send()
     }
 })
 .get(validateDateRangeFiltersSyntax, (req, res) => {
@@ -28,7 +29,8 @@ router.route(endPoint)
         }
         res.status(204).send()
     } catch (error) {
-        res.status(500).send(error)
+        console.log(error)
+        res.status(500).send()
     }
 })
 
@@ -43,6 +45,7 @@ router.route(endPoint + ':' + idParam)
         }
         res.status(404).send()
     } catch (error) {
+        console.log(error)
         res.status(500).send()
     }
 })
