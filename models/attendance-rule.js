@@ -1,9 +1,18 @@
 import fs from 'fs'
 import { v1 as uuidv1 } from 'uuid';
+import {weekdays,
+        isStandardDateFormat,
+        standardPatternDateStringToDate,
+        addDaysToDate,
+        isDateRangeEqualsGreaterThanOneWeek
+        } from '../utils/dateTimeUtils.js'
+    
 
 const attendanceRulesPath = './saved-rules/'
 const attendanceRulesFile = 'attendance-rules.json'
 const attendanceRulesFilePath = attendanceRulesPath + attendanceRulesFile
+const startDateQueryParam = 'start-date'
+const endDateQueryParam = 'end-date'
 
 function saveNewAttendanceRule (requestBody) {
     const newAR = buildNewAttendanceRule(requestBody)
@@ -44,7 +53,7 @@ function saveAttendanceRuleJSON (newAR) {
     }
 }
 
-function getAttendanceRulesJSON (filter) {
+function getAttendanceRulesJSON () {
     try {
         if (fs.existsSync(attendanceRulesFilePath)) {
             const buffer = fs.readFileSync(attendanceRulesFilePath)
@@ -59,9 +68,65 @@ function getAttendanceRulesJSON (filter) {
     }
 }
 
+function getAttendanceRules (reqQuery) {
+    if (dateQueryParamsExists(reqQuery)) {
+        return filterAttendanceRules(reqQuery)
+    } else {
+        return getAttendanceRulesJSON()
+    }
+}
+
+function dateQueryParamsExists (reqQuery) {
+    return reqQuery[startDateQueryParam] && reqQuery[endDateQueryParam]
+}
+
+function filterAttendanceRules (reqQuery) {
+    const rules = getAttendanceRulesJSON()
+    let filteredRules = []
+    filteredRules = filteredRules.concat(getAllDailyAttendanceRules(rules))
+    filteredRules = filteredRules.concat(getWeeklyAttendanceRules(reqQuery, rules))
+    filteredRules = filteredRules.concat(getAttendanceRulesByDate(reqQuery, rules))
+    return filteredRules;
+}
+
+function getAllDailyAttendanceRules (rules) {
+    return rules.filter(rule => rule.day === 'daily')
+}
+
+function getWeeklyAttendanceRules(reqQuery, rules) {
+    const startDate = standardPatternDateStringToDate(reqQuery[startDateQueryParam])
+    const endDate = standardPatternDateStringToDate(reqQuery[endDateQueryParam])
+    if (isDateRangeEqualsGreaterThanOneWeek(startDate, endDate)) {
+        return rules.filter(rule => weekdays.includes(rule.day))
+    } else {
+        const queryWeekdays = []
+        let date = new Date()
+        date.setTime(startDate.getTime())
+        while (date <= endDate) {
+            queryWeekdays.push(weekdays[date.getDay()])
+            date = addDaysToDate(date, 1)
+        }
+        return rules.filter(rule => queryWeekdays.includes(rule.day))
+    }
+}
+
+function getAttendanceRulesByDate (reqQuery, rules) {
+    const startDate = standardPatternDateStringToDate(reqQuery[startDateQueryParam])
+    const endDate = standardPatternDateStringToDate(reqQuery[endDateQueryParam])
+
+    let filteredRules = rules.filter((rule) => {
+        if (isStandardDateFormat(rule.day)) {
+            const ruleDate = standardPatternDateStringToDate(rule.day)
+            return startDate <= ruleDate && ruleDate <= endDate
+        }
+        return false
+    })
+    return filteredRules
+}
+
 const attendanceRule = {
     saveNewAttendanceRule,
-    getAttendanceRulesJSON
+    getAttendanceRules
 }
 
 export default attendanceRule

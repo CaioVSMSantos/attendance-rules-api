@@ -1,6 +1,8 @@
 import express from 'express'
 import validateNewAttendanceRuleSyntax 
     from '../middlewares/validateNewAttendanceRuleSyntax.js'
+import validateDateRangeFiltersSyntax
+    from '../middlewares/validateDateRangeFiltersSyntax.js'
 import ar from '../models/attendance-rule.js'
 
 const router = new express.Router()
@@ -8,7 +10,7 @@ const endPoint = '/attendance-rules/'
 const idParam = 'attendanceRuleId'
 
 router.route(endPoint)
-.post(validateNewAttendanceRuleSyntax, async (req, res) => {
+.post(validateNewAttendanceRuleSyntax, (req, res) => {
     try{
         const savedAttendanceRule = ar.saveNewAttendanceRule(req.body)
         res.status(201)
@@ -18,9 +20,9 @@ router.route(endPoint)
         res.status(400).send()
     }
 })
-.get(async (req, res) => {
+.get(validateDateRangeFiltersSyntax, (req, res) => {
     try {
-        const attendanceRules = ar.getAttendanceRulesJSON(req.query)
+        const attendanceRules = ar.getAttendanceRules(req.query)
         if (attendanceRules.length !== 0) {
             return res.status(200).send(attendanceRules)
         }
