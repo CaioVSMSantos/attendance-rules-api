@@ -62,8 +62,8 @@ function addDaysToDate (date, days) {
 }
 
 function compareTimeStrings (string1, string2) {
-    const time1 = standardTimeStringToDate(string1)
-    const time2 = standardTimeStringToDate(string2)
+    const time1 = timeStringToDate(string1)
+    const time2 = timeStringToDate(string2)
 
     if (time1 < time2) {
         return 1
