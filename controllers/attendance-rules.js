@@ -18,7 +18,7 @@ router.route(endPoint)
                 .location(endPoint + savedAttendanceRule.id)
                 .send()
         } else {
-            return res.status(409).send({error: 'Conflicting time intervals'})
+            return res.status(409).send()
         }
     } catch (error) {
         console.log(error)

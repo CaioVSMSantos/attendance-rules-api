@@ -64,10 +64,13 @@ function addDaysToDate (date, days) {
 function compareTimeStrings (string1, string2) {
     const time1 = timeStringToDate(string1)
     const time2 = timeStringToDate(string2)
+    return compareDates(time1, time2)
+}
 
-    if (time1 < time2) {
+function compareDates (date1, date2) {
+    if (date1 < date2) {
         return 1
-    } else if (time1 > time2) {
+    } else if (date1 > date2) {
         return -1
     } else {
         return 0
@@ -78,6 +81,58 @@ function duplicateDate (date) {
     let newDate = new Date()
     newDate.setTime(date.getTime())
     return newDate
+}
+
+function areTimeIntervalsConflicting (i1, i2) {
+    return isFirstTimeIntervalPartiallyInsideSecondTimeInterval(i1, i2)
+        || isFirstTimeIntervalPartiallyInsideSecondTimeInterval(i2, i1)
+        || isFirstTimeIntervalInsideSecondTimeInterval(i1, i2)
+        || isFirstTimeIntervalInsideSecondTimeInterval(i2, i1)
+}
+
+/*
+Returns true if:
+Interval1 -             [s1-----------------e1]
+Interval2 -     [s2----------------e2]
+*/
+function isFirstTimeIntervalPartiallyInsideSecondTimeInterval (i1, i2) {
+    const start1 = timeStringToDate(i1.start)
+    const end1 = timeStringToDate(i1.end)
+    const start2 = timeStringToDate(i2.start)
+    const end2 = timeStringToDate(i2.end)
+
+    return start1 >= start2 
+        && start1 < end2
+        && end1 > start2
+        && end1 >= end2
+}
+
+/*
+Returns true if:
+Interval1 -             [s1-------------e1]
+Interval2 -     [s2-----------------------------e2]
+*/
+function isFirstTimeIntervalInsideSecondTimeInterval (i1, i2) {
+    const start1 = timeStringToDate(i1.start)
+    const end1 = timeStringToDate(i1.end)
+    const start2 = timeStringToDate(i2.start)
+    const end2 = timeStringToDate(i2.end)
+
+    return start1 >= start2 
+        && start1 < end2
+        && end1 > start2
+        && end1 <= end2
+}
+
+function isStandardTimeInterval (interval) {
+    for (const obj in interval) {
+        if (obj !== 'start' && obj !== 'end') {
+            return false
+        }
+    }
+    return isStandardTimeFormat(interval.start)
+        && isStandardTimeFormat(interval.end)
+        && compareTimeStrings(interval.start, interval.end) >= 0
 }
 
 const dateTimeUtils = {
@@ -92,7 +147,9 @@ const dateTimeUtils = {
     isDateRangeEqualsGreaterThanOneWeek,
     addDaysToDate,
     compareTimeStrings,
-    duplicateDate
+    duplicateDate,
+    areTimeIntervalsConflicting,
+    isStandardTimeInterval
 }
 
 export default dateTimeUtils

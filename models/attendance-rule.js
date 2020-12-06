@@ -7,7 +7,7 @@ const fileName = 'attendance-rules.json'
 
 function saveNewAttendanceRule (requestBody) {
     const newAR = buildNewAttendanceRuleObject(requestBody)
-    if (validateNonConflictingIntervals(newAR)) {
+    if (validateNonConflictingAttendanceRule(newAR)) {
         saveNewRuleToFile(newAR)
         return newAR
     }
@@ -22,12 +22,8 @@ function buildNewAttendanceRuleObject (requestBody) {
     return rule
 }
 
-function validateNonConflictingIntervals(newAR) {
-    return true
-}
-
 function saveNewRuleToFile (newAR) {
-    let rules = getAllAttendanceRules ()
+    let rules = getAllAttendanceRules()
     rules.push(newAR)
     fu.saveJSONFile(rules, path, fileName)
 }
@@ -38,6 +34,49 @@ function getAllAttendanceRules () {
         rules = []
     }
     return rules
+}
+
+function validateNonConflictingAttendanceRule(newAR) {
+    return validateNonConflictingIntervals(newAR.intervals)
+        && validateNonConflictingIntervalsWithSavedRules(newAR)
+}
+
+function validateNonConflictingIntervals (ints1) {
+    for (const i1 of ints1) {
+        for (const i2 of ints1) {
+            if (ints1.indexOf(i1) === ints1.indexOf(i2)) {
+                continue
+            }
+            if (dtu.areTimeIntervalsConflicting(i1, i2)) {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+function validateNonConflictingIntervalsArrays (ints1, ints2) {
+    for (const i1 of ints1) {
+        for (const i2 of ints2) {
+            if (dtu.areTimeIntervalsConflicting(i1, i2)) {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+function validateNonConflictingIntervalsWithSavedRules (newAR) {
+    //TODO
+    return true
+}
+
+function getIntervals (rules) {
+    let intervals = []
+    for (const rule of rules) {
+        intervals = intervals.concat(rule.intervals)
+    }
+    return intervals
 }
 
 function getAttendanceRules (reqQuery) {
@@ -85,21 +124,33 @@ function buildNewFormattedRuleObject (date) {
     }
 }
 
-function getDailyRulesIntervals (allRules) {
-    return getRulesIntervalsByDayFilter(allRules, 'daily')
+function getDailyRulesIntervals (rules=undefined) {
+    if (!rules) {
+        rules = getAllAttendanceRules()
+    }
+    return getRulesIntervalsByDayFilter('daily', rules)
 }
 
-function getWeeklyRulesIntervals (date, allRules) {
+function getWeeklyRulesIntervals (date, rules=undefined) {
+    if (!rules) {
+        rules = getAllAttendanceRules()
+    }
     const day = dtu.weekdays[date.getUTCDay()]
-    return getRulesIntervalsByDayFilter(allRules, day)
+    return getRulesIntervalsByDayFilter(day, rules)
 }
 
-function getDateRulesIntervals (date, allRules) {
+function getDateRulesIntervals (date, rules=undefined) {
+    if (!rules) {
+        rules = getAllAttendanceRules()
+    }
     const day = dtu.dateToString(date)
-    return getRulesIntervalsByDayFilter(allRules, day)
+    return getRulesIntervalsByDayFilter(day, rules)
 }
 
-function getRulesIntervalsByDayFilter (rules, filter) {
+function getRulesIntervalsByDayFilter (filter, rules=undefined) {
+    if (!rules) {
+        rules = getAllAttendanceRules()
+    }
     let intervals = []
     for (const rule of rules) {
         if (rule.day === filter) {

@@ -20,16 +20,8 @@ function validateIntervalsProperty (intervals) {
     return intervals 
         && intervals.length !== 0 
         && intervals.every((interval) => {
-            return validateIntervalObject(interval)
+            return dtu.isStandardTimeInterval(interval)
         })
-}
-
-function validateIntervalObject (interval) {
-    return interval.start 
-        && interval.end 
-        && dtu.isStandardTimeFormat(interval.start)
-        && dtu.isStandardTimeFormat(interval.end)
-        && dtu.compareTimeStrings(interval.start, interval.end) >= 1
 }
 
 export default validateNewAttendanceRuleSyntax

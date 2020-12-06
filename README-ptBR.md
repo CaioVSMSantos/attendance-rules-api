@@ -7,7 +7,7 @@
 
 <p>Esta é uma API REST simples para gerenciar regras de atendimento para uma clínica.</p>
 
-<h2>Instructions</h2>
+<h2>Instruções</h2>
 
 <p>Esta API pode ser utilizada através de seu principal Endpoint <strong>/attendance-rules</strong> da seguinte forma:</p>
 
@@ -24,7 +24,7 @@ Este método é usado para salvar uma nova Regra de Atendimento. Ela deve ser en
     <li><strong>DAY_STRING</strong>: A Data ou Período no qual a Regra de Atendimento se aplica. Os valores aceitáveis são:</li>
     <ul>
         <li><strong>"daily"</strong>: O Atendimento ocorre todos os dias, incluindo fins de semana</li>
-        <li><strong>"sundays", "mondays", "tuesdays", "wednesdays", "thursdays", "fridays" or "saturdays"</strong>: O Atendimento ocorre semanalmente nos Domingos, Segundas, Terças, Quartas, Quintas, Sextas e Sábados respectivamente</li>
+        <li><strong>"sundays", "mondays", "tuesdays", "wednesdays", "thursdays", "fridays" ou "saturdays"</strong>: O Atendimento ocorre semanalmente nos Domingos, Segundas, Terças, Quartas, Quintas, Sextas ou Sábados respectivamente</li>
         <li><strong>"dd-MM-yyyy"</strong>: O Atendimento ocorrerá apenas na data especificada</li>
     </ul>
     <li><strong>TIME1 e TIME2</strong>: O horário do dia no qual o Atendimento ocorrerá. Ambos devem estar no formato "HH:mm" e TIME1 deve ser menor ou igual do que TIME2</li>
