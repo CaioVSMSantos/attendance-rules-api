@@ -11,8 +11,13 @@ const standardTimeDelimiter = ':'
 const weekdays = ['sundays', 'mondays', 'tuesdays', 'wednesdays',
                   'thursdays', 'fridays', 'saturdays']
 
+const daily = 'daily'
 const startDateQueryParam = 'start-date'
 const endDateQueryParam = 'end-date'
+
+function getWeekdays () {
+    return weekdays
+}
 
 function isStandardDateFormat (dateString) {
     return standardDatePattern.test(dateString)
@@ -135,10 +140,20 @@ function isStandardTimeInterval (interval) {
         && compareTimeStrings(interval.start, interval.end) >= 0
 }
 
+function getWeekdayByDateString (dateString) {
+    if (isStandardDateFormat(dateString)) {
+        const date = dateStringToDate(dateString)
+        return weekdays[date.getUTCDay()]
+    }
+    return undefined
+}
+
 const dateTimeUtils = {
-    weekdays,
+    daily,
     startDateQueryParam,
     endDateQueryParam,
+    
+    getWeekdays,
     isStandardDateFormat,
     isStandardTimeFormat,
     dateStringToDate, 
@@ -149,7 +164,8 @@ const dateTimeUtils = {
     compareTimeStrings,
     duplicateDate,
     areTimeIntervalsConflicting,
-    isStandardTimeInterval
+    isStandardTimeInterval,
+    getWeekdayByDateString
 }
 
 export default dateTimeUtils

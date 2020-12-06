@@ -1,4 +1,5 @@
 import { v1 as uuidv1 } from 'uuid';
+import dateTimeUtils from '../utils/dateTimeUtils.js';
 import dtu from '../utils/dateTimeUtils.js'
 import fu from '../utils/fileUtils.js'
     
@@ -67,8 +68,29 @@ function validateNonConflictingIntervalsArrays (ints1, ints2) {
 }
 
 function validateNonConflictingIntervalsWithSavedRules (newAR) {
-    //TODO
-    return true
+    const rules = getAllAttendanceRules()
+    let intervals = []
+    let weekday = undefined
+    let date = undefined
+
+    if (newAR.day === dtu.daily) {
+        intervals = getIntervals(rules)
+        return validateNonConflictingIntervalsArrays(newAR.intervals, intervals)
+    } else if (dtu.getWeekdays().includes(newAR.day)) {
+        weekday = newAR.day
+    } else {
+        weekday = dtu.getWeekdayByDateString(newAR.day)
+        date = newAR.day
+    }
+
+    for (const rule of rules) {
+        if (rule.day === dtu.daily) {
+            intervals = intervals.concat(rule.intervals)
+        } else if (rule.day === weekday || rule.day === date) {
+            intervals = intervals.concat(rule.intervals)
+        }
+    }
+    return validateNonConflictingIntervalsArrays(newAR.intervals, intervals)
 }
 
 function getIntervals (rules) {
@@ -83,6 +105,7 @@ function getAttendanceRules (reqQuery) {
     if (dateQueryParamsExists(reqQuery)) {
         const startDt = dtu.dateStringToDate(reqQuery[dtu.startDateQueryParam])
         const endDt = dtu.dateStringToDate(reqQuery[dtu.endDateQueryParam])
+
         return filterAttendanceRulesByDateRange(startDt, endDt)
     } else {
         return getAllAttendanceRules()
@@ -128,14 +151,14 @@ function getDailyRulesIntervals (rules=undefined) {
     if (!rules) {
         rules = getAllAttendanceRules()
     }
-    return getRulesIntervalsByDayFilter('daily', rules)
+    return getRulesIntervalsByDayFilter(dtu.daily, rules)
 }
 
 function getWeeklyRulesIntervals (date, rules=undefined) {
     if (!rules) {
         rules = getAllAttendanceRules()
     }
-    const day = dtu.weekdays[date.getUTCDay()]
+    const day = dtu.getWeekdays()[date.getUTCDay()]
     return getRulesIntervalsByDayFilter(day, rules)
 }
 

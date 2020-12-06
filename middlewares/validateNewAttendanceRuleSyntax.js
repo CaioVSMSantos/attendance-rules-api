@@ -11,8 +11,8 @@ function validateNewAttendanceRuleSyntax (req, res, next) {
 
 function validateDayProperty (day) {
     return day 
-        && (day === 'daily' 
-            || dtu.weekdays.includes(day) 
+        && (day === dtu.daily 
+            || dtu.getWeekdays().includes(day) 
             || dtu.isStandardDateFormat(day))
 }
 

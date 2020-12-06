@@ -3,6 +3,7 @@ import dtu from '../utils/dateTimeUtils.js'
 function validateDateRangeFiltersSyntax(req, res, next){
     const startDate = req.query[dtu.startDateQueryParam]
     const endDate = req.query[dtu.endDateQueryParam]
+
     if (startDate || endDate) {
         if (dtu.isStandardDateFormat(startDate) 
         && dtu.isStandardDateFormat(endDate)) {

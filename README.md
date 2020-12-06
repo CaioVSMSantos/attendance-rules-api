@@ -33,6 +33,7 @@ This method is used to save a new Attendance Rule. It must be sent in the body o
 <p>The "intervals" Array may contain any number of Time Range objects as necessary, as long as they meet the structure with exactly the "start" and "end" properties.</p>
 <p>If the JSON structure is correct, a Response with status code 201 will be sent with the header "Location" presenting the location and ID of the saved Attendance Rule. Any extra properties included in the JSON will be ignored.</p>
 <p>If the JSON structure is incorrect, a Response with status code 400 will be sent.</p>
+<p>if there is any conflict with the time intervals within the Array itself or with other saved Attendance Rules, a Response with status code 409 will be sent.</p>
 
 <h3>GET</h3>
 <p>If used without URL query params, this method recovers all Attendance Rules saved and returns them as a JSON Array in the body of the Response with the status code 200. If there isn't any saved Attendance Rules the Response body will be empty and the status code will be 204.</p>

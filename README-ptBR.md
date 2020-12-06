@@ -32,8 +32,8 @@ Este método é usado para salvar uma nova Regra de Atendimento. Ela deve ser en
 
 <p>O Array "intervals" pode conter qualquer número de objetos de Intervalos de Tempo quanto forem necessários, contanto que atendam a estrutura com as propriedades "start" e "end" exatamente.</p>
 <p>Se a estrutura do JSON estiver correta, uma Response com código de status 201 será enviada com o header "Location" apresentando a localização e ID da Regra de Atendimento salva. Quaisquer propriedades extras incluídas no JSON serão ignoradas.</p>
-
 <p>Se a estrutura do JSON estiver incorreta, uma Response com código de status 400 será enviada.</p>
+<p>Se houver algum conflito com os intervalos de tempo dentro do próprio Array ou com outras Regras de Atendimento salvas, uma Response com código de status 409 será enviada.</p>
 
 <h3>GET</h3>
 <p>Se utilizada sem parâmetros de query na URL, este método irá recuperar todas as Regras de Atendimento e retorná-las como um Array JSON no body da Response com código de status 200. Se não houver nenhuma Regra de Atendimento salva o body da Response estará vazio e o código de status será 204.</p>
