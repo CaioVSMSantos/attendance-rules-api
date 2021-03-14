@@ -1,4 +1,4 @@
-<h1> CUBOS-Backend-Challenge </h1>
+<h1> cubos-desafio-backend-gerenciamento-clinica </h1>
 <h3 align="center">
     <a href="README.md">English-US</a>
     <span>|</span>
