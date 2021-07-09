@@ -137,6 +137,6 @@ URL: HOST/attendance-rules?start-date=04-12-2020&end-date=08-12-2020
 
 <h2>Créditos</h2>
 
-Esse Projeto foi construído por [Caio "Tyghorn" Victor](https://github.com/CaioVictorMota).
+Esse Projeto foi construído por [Caio "Tyghorn" Victor](https://github.com/CaioVSMSantos).
 
 Nós somos todos um.
