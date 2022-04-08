@@ -1,5 +1,3 @@
-[![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
-
 <h1> attendance-rules-api </h1>
 <h3 align="center">
     <a href="README.md">English-US</a>
@@ -137,17 +135,3 @@ URL: HOST/attendance-rules?start-date=04-12-2020&end-date=08-12-2020
 <p><strong>GET localhost:3000/attendance-rules?start-date=04-12-2020&end-date=08-12-2020</strong></p>
 
 <p><strong>DELETE localhost:3000/attendance-rules/ID</strong> (ID can be found in the Location header after POSTing a new Attendance Rule)</p>
-
-
-
-<h2>License</h2>
-
-
-This work is licensed under a
-[Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
-
-[![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa]
-
-[cc-by-sa]: http://creativecommons.org/licenses/by-sa/4.0/
-[cc-by-sa-image]: https://licensebuttons.net/l/by-sa/4.0/88x31.png
-[cc-by-sa-shield]: https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg
